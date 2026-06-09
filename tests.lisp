@@ -2,7 +2,7 @@
 ;;; Testes simples para agenda.lisp.
 ;;;
 ;;; Para executar:
-;;;   sbcl --script tests.lisp
+;;; sbcl --script tests.lisp
 
 (load "agenda.lisp")
 
@@ -58,8 +58,39 @@
     (setq agenda (incluir agenda '(Bel 32338778)))
     (verificar-igual "nao duplica telefone ja existente"
                      '(32338778)
-                     (Telefones agenda 'Bel)))
+                     (Telefones agenda 'Bel))
 
+    ;; --- NOVOS TESTES AVANÇADOS ---
+
+    (let ((agenda-vazia nil))
+      (verificar-igual "busca em agenda totalmente vazia"
+                       'INEXISTENTE
+                       (Telefones agenda-vazia 'Qualquer))
+      
+      (verificar-igual "exclui contato de agenda vazia"
+                       nil
+                       (excluir agenda-vazia '(Rose 123456))))
+
+    (setq agenda (incluir agenda '(Carlos 1111)))
+    (setq agenda (incluir agenda '(Carlos 2222)))
+    (setq agenda (incluir agenda '(Carlos 3333)))
+    (setq agenda (excluir agenda '(Carlos 2222)))
+    (verificar-igual "remove um telefone do meio da lista"
+                     '(1111 3333)
+                     (Telefones agenda 'Carlos))
+
+    (setq agenda (incluir agenda '(Carlos 3333)))
+    (setq agenda (incluir agenda '(Carlos 3333)))
+    (verificar-igual "tenta adicionar o mesmo telefone multiplas vezes"
+                     '(1111 3333)
+                     (Telefones agenda 'Carlos))
+
+    (setq agenda (incluir agenda '(ALICE 9999)))
+    (verificar-igual "busca contato testando case sensitivity do Lisp"
+                     '(9999)
+                     (Telefones agenda 'Alice))) ; O escopo da variável 'agenda' fecha aqui
+
+  ;; Verificação final de falhas, agora fora do escopo do 'let' mas dentro da função
   (if (zerop *falhas*)
       (format t "~%Todos os testes passaram.~%")
       (progn
@@ -67,4 +98,3 @@
         (sb-ext:exit :code 1))))
 
 (executar-testes)
-
