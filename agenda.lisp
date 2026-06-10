@@ -10,6 +10,9 @@
 ;;;   (setq AGENDA (incluir AGENDA '(Rose 32666556)))
 ;;;   (Telefones AGENDA 'Rose)
 
+(defparameter AGENDA nil
+  "Variavel global usada nos testes interativos do trabalho.")
+
 (defun mesmo-nome-p (registro nome)
   "Verifica se REGISTRO pertence ao contato chamado NOME."
   (equal (first registro) nome))
@@ -84,4 +87,3 @@ quando nao existe."
     (if registro
         (rest registro)
         'INEXISTENTE)))
-
